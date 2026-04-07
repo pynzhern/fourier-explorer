@@ -85,6 +85,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
                     </div>
                     <div className="flex items-center gap-1">
                       <button
+                        type="button"
                         onClick={() => updateComponent(i, { enabled: !comp.enabled })}
                         className={`text-xs px-1.5 py-0.5 rounded leading-none transition-colors ${
                           comp.enabled
@@ -96,6 +97,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
                       </button>
                       {components.length > 1 && (
                         <button
+                          type="button"
                           onClick={() => removeComponent(i)}
                           className="text-xs px-1.5 py-0.5 rounded bg-red-500/10 text-red-400/70 hover:text-red-400 transition-colors leading-none"
                           aria-label={`Remove component ${i + 1}`}
@@ -186,6 +188,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
         {/* Add component button */}
         {components.length < 5 && (
           <button
+            type="button"
             onClick={addComponent}
             className="w-full py-1.5 rounded-lg border border-dashed border-slate-600/50 text-slate-500 text-xs hover:border-cyan-400/30 hover:text-cyan-400/70 transition-colors"
           >
