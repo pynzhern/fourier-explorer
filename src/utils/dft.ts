@@ -109,8 +109,9 @@ export function dotProductWithSin(
 }
 
 /**
- * Reconstruct a signal from DFT coefficients using only the first K frequency components.
- * x[n] = (1/N) * sum_{k=0}^{K-1} ( Re[k]*cos(2*pi*k*n/N) - Im[k]*sin(2*pi*k*n/N) )
+ * Reconstruct a signal from DFT coefficients using the first K frequency bins.
+ * Accounts for conjugate symmetry: each bin k (except DC and Nyquist) has a
+ * mirror at N-k that contributes equally, so we multiply by 2.
  */
 export function reconstructSignal(
   dftResult: DFTResult,
@@ -124,7 +125,8 @@ export function reconstructSignal(
     let val = 0;
     for (let k = 0; k < maxK; k++) {
       const angle = (2 * Math.PI * k * n) / N;
-      val += dftResult.real[k] * Math.cos(angle) - dftResult.imag[k] * Math.sin(angle);
+      const factor = (k === 0 || k === N / 2) ? 1 : 2;
+      val += factor * (dftResult.real[k] * Math.cos(angle) - dftResult.imag[k] * Math.sin(angle));
     }
     signal[n] = val / N;
   }
@@ -133,8 +135,8 @@ export function reconstructSignal(
 }
 
 /**
- * Normalize magnitude spectrum for display (divide by N/2, except DC which divides by N).
+ * normalise magnitude spectrum for display (divide by N/2, except DC which divides by N).
  */
-export function normalizeMagnitude(magnitude: number[], N: number): number[] {
+export function normaliseMagnitude(magnitude: number[], N: number): number[] {
   return magnitude.map((m, k) => (k === 0 ? m / N : (2 * m) / N));
 }

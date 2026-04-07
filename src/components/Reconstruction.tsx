@@ -6,7 +6,7 @@ import {
   generateSignal,
   computeDFT,
   reconstructSignal,
-  normalizeMagnitude,
+  normaliseMagnitude,
 } from "../utils/dft";
 import type { SineComponent } from "../utils/dft";
 
@@ -27,8 +27,8 @@ export default function Reconstruction({ components }: ReconstructionProps) {
 
   const dft = useMemo(() => computeDFT(originalSignal), [originalSignal]);
 
-  const normalizedMags = useMemo(
-    () => normalizeMagnitude(dft.magnitude, N),
+  const normalisedMags = useMemo(
+    () => normaliseMagnitude(dft.magnitude, N),
     [dft],
   );
 
@@ -58,7 +58,8 @@ export default function Reconstruction({ components }: ReconstructionProps) {
       id="reconstruction"
       number="Part Four"
       title="Reconstruction: no information lost"
-      subtitle="The DFT is perfectly reversible. You can rebuild the original signal from its spectrum by adding back one frequency at a time. This is the inverse DFT in action."
+      subtitle="The DFT doesn't destroy anything. Given the spectrum, you can perfectly rebuild the original signal by adding back one frequency component at a time. Slide K up and watch the cyan curve converge onto the original — that's the inverse DFT in action."
+      narration={`Part four: reconstruction — no information lost. The D.F.T. doesn't destroy anything. Given the frequency spectrum, you can perfectly rebuild the original signal by adding back one frequency component at a time. Each frequency bin holds a coefficient — a weight that says how much cosine and how much sine at that frequency. Turn each coefficient back into a weighted wave, sum them all, and you get the original signal back. The more frequency bins you include, the better the approximation. With all bins included, you get perfect reconstruction — zero error. The D.F.T. and its inverse are exact inverses of each other. This is the principle behind compression. em pee three and jay peg work on this exact idea: transform to the frequency domain, keep only the bins with significant energy, and throw away the rest. The smallest number of bins that gives near-zero error is the compression sweet spot.`}
     >
       <div className="space-y-5">
         {/* Intro */}
@@ -69,8 +70,9 @@ export default function Reconstruction({ components }: ReconstructionProps) {
           </summary>
           <div className="px-4 pb-4 text-slate-300 text-sm leading-relaxed space-y-2">
             <p>
-              Starting from the frequency spectrum, take each bin's coefficient and turn
-              it back into a weighted sine and cosine wave. The inverse DFT formula is:
+              Each frequency bin holds a coefficient — a weight that says "this
+              much cosine, this much sine at frequency k." Turn each coefficient
+              back into a weighted wave and sum them all:
             </p>
             <div className="bg-navy-900/50 rounded-lg p-3 text-center overflow-x-auto">
               <Tex
@@ -79,8 +81,9 @@ export default function Reconstruction({ components }: ReconstructionProps) {
               />
             </div>
             <p>
-              The more frequency bins you include (higher K), the closer you get to
-              the original. Use the slider to control K.
+              More bins = better approximation. With all bins included, you get
+              perfect reconstruction — zero error. This is lossless: the DFT and
+              its inverse are exact inverses of each other.
             </p>
           </div>
         </details>
@@ -127,22 +130,23 @@ export default function Reconstruction({ components }: ReconstructionProps) {
             <div className="absolute left-0 right-0 bottom-5 h-px bg-slate-600/50" />
             <div
               className="absolute top-0 bottom-5 w-px bg-red-400/60 z-10 transition-all duration-200"
-              style={{ left: `${(K / maxK) * 100}%` }}
+              style={{ left: `${((K - 1) / (maxK - 1)) * 100}%` }}
             >
               <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 px-1 py-px rounded bg-red-400/20 text-[8px] text-red-400 whitespace-nowrap">
                 cutoff
               </div>
             </div>
             <div className="flex items-end h-full pb-5 px-1">
-              {normalizedMags.slice(0, maxK).map((mag, k) => {
-                const maxMag = Math.max(...normalizedMags.slice(0, maxK), 0.01);
+              {normalisedMags.slice(1, maxK).map((mag, i) => {
+                const k = i + 1;
+                const maxMag = Math.max(...normalisedMags.slice(1, maxK), 0.01);
                 const barH = (mag / maxMag) * 72;
                 const included = k < K;
                 return (
                   <div
                     key={k}
                     className="flex flex-col items-center justify-end"
-                    style={{ width: `${100 / maxK}%`, padding: `0 ${(100 / maxK) * 0.1}%` }}
+                    style={{ width: `${100 / (maxK - 1)}%`, padding: `0 ${(100 / (maxK - 1)) * 0.1}%` }}
                   >
                     <div
                       className={`w-full rounded-t transition-all duration-200 ${included ? "bg-cyan-400" : "bg-slate-700/50"}`}
@@ -164,13 +168,13 @@ export default function Reconstruction({ components }: ReconstructionProps) {
             signals={[
               {
                 data: originalSignal,
-                color: "rgba(255,255,255,0.2)",
+                colour: "rgba(255,255,255,0.2)",
                 lineWidth: 1.5,
                 label: "Original",
               },
               {
                 data: reconstructed,
-                color: "#22d3ee",
+                colour: "#22d3ee",
                 lineWidth: 2,
                 label: `Reconstructed (K=${K})`,
               },
@@ -180,10 +184,8 @@ export default function Reconstruction({ components }: ReconstructionProps) {
           />
           <p className="text-xs text-slate-500 text-center">
             {error < 0.001
-              ? "Perfect reconstruction. No information was lost in the DFT."
-              : K >= maxComponentFreq
-                ? "Almost there. A few more bins will capture everything."
-                : `Using ${K} of ${maxK} frequency bins. Slide K higher to improve the approximation.`}
+              ? "Perfect reconstruction — every sample matches the original exactly."
+              : `${K} of ${maxK} bins included. The gap between cyan and grey is what you're throwing away.`}
           </p>
         </div>
 
@@ -191,15 +193,16 @@ export default function Reconstruction({ components }: ReconstructionProps) {
         <div className="rounded-xl bg-navy-800/30 border border-cyan-400/10 p-4">
           <p className="text-slate-300 text-sm leading-relaxed">
             <span className="text-cyan-400 font-medium">
-              Compression:
+              Why this matters — compression:
             </span>{" "}
-            MP3 and JPEG use this principle. Transform data to the frequency domain,
-            keep only bins with significant energy, discard the rest. You're using{" "}
+            MP3 and JPEG work on this exact principle. Transform to the frequency
+            domain, keep only the bins with significant energy, throw away the rest.
+            You're using{" "}
             <span className="text-white">{K}/{maxK}</span> bins
-            ({((K / maxK) * 100).toFixed(0)}% of spectrum).{" "}
+            ({((K / maxK) * 100).toFixed(0)}% of the spectrum).{" "}
             {error < 0.001
-              ? "Already perfect, because the signal has only a few frequencies."
-              : "Try finding the smallest K that gives near-zero error."}
+              ? "Already perfect — the signal only contains a few frequencies, so most bins were empty anyway."
+              : "Try finding the smallest K that gives near-zero error. That's the compression sweet spot."}
           </p>
         </div>
       </div>

@@ -53,8 +53,9 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
     <SectionWrapper
       id="signal-builder"
       number="Part One"
-      title="Any signal is a sum of sine waves"
-      subtitle="This is one of the most beautiful ideas in mathematics. Every signal you can imagine, no matter how complex it looks, can be broken down into simple sine waves added together. Drag the sliders below to build your own signal from scratch."
+      title="Any signal is a sum of sinusoids"
+      subtitle="Think of a chord on a piano. You hear one sound, but multiple notes are ringing simultaneously. Every signal — no matter how jagged or complex — is just a collection of sine waves added together, each with its own frequency, amplitude, and phase. Build one yourself: drag the sliders and watch the composite signal change."
+      narration="Part one: any signal is a sum of sighnewsoids. Think of a chord on a piano. You hear one sound, but multiple notes are ringing simultaneously. Every signal, no matter how jagged or complex, is just a collection of sine waves added together, each with its own frequency, amplitude, and phase. Use the sliders to build your own signal from scratch. Each component is a single sine wave with a frequency, amplitude, and phase. The composite signal at the bottom is the sum of all the components. This is what a microphone captures — one messy waveform. The individual frequencies are buried inside, and the D.F.T.'s entire job is to pull them back out."
     >
       <div className="space-y-2">
         {/* Component waves */}
@@ -167,7 +168,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
                     signals={[
                       {
                         data: componentSignals[i],
-                        color: comp.enabled
+                        colour: comp.enabled
                           ? COMPONENT_COLORS[i % COMPONENT_COLORS.length]
                           : "#475569",
                         lineWidth: 1.5,
@@ -206,7 +207,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
               signals={[
                 {
                   data: compositeSignal,
-                  color: "#ffffff",
+                  colour: "#ffffff",
                   lineWidth: 2,
                 },
               ]}
@@ -215,7 +216,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
             />
           </div>
           <p className="text-xs text-slate-500 mt-1.5 text-center">
-            This is what a microphone would "hear." The individual components are hidden inside, and the DFT's job is to find them.
+            This is what a microphone captures — one messy waveform. The individual frequencies are buried inside, and the DFT's entire job is to pull them back out.
           </p>
         </div>
       </div>

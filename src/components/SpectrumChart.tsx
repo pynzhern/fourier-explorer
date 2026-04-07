@@ -1,6 +1,7 @@
 interface SpectrumChartProps {
   magnitudes: number[];
   maxFreq?: number;
+  startBin?: number;
   height?: number;
   className?: string;
   highlightBin?: number;
@@ -11,6 +12,7 @@ interface SpectrumChartProps {
 export default function SpectrumChart({
   magnitudes,
   maxFreq,
+  startBin = 0,
   height = 200,
   className = "",
   highlightBin,
@@ -18,10 +20,10 @@ export default function SpectrumChart({
   labelPrefix = "k",
 }: SpectrumChartProps) {
   const N = maxFreq ?? Math.min(magnitudes.length, 20);
-  const bins = magnitudes.slice(0, N);
+  const bins = magnitudes.slice(startBin, N);
   const maxMag = Math.max(...bins, 0.01);
 
-  const barWidth = 100 / N;
+  const barWidth = 100 / bins.length;
   const barGap = barWidth * 0.2;
 
   return (
@@ -32,15 +34,16 @@ export default function SpectrumChart({
       <div className="absolute left-0 right-0 bottom-6 h-px bg-slate-600" />
 
       <div className="flex items-end h-full pb-6 px-1">
-        {bins.map((mag, k) => {
+        {bins.map((mag, i) => {
+          const k = i + startBin;
           const barH = (mag / maxMag) * (height - 32);
           const isHighlight = highlightBin === k;
           const isActive = activeFrequencies?.includes(k);
 
-          let barColor = "bg-cyan-400/60";
-          if (isHighlight) barColor = "bg-amber-400";
-          else if (isActive) barColor = "bg-cyan-400";
-          else if (mag / maxMag > 0.3) barColor = "bg-cyan-400/80";
+          let barColour = "bg-cyan-400/60";
+          if (isHighlight) barColour = "bg-amber-400";
+          else if (isActive) barColour = "bg-cyan-400";
+          else if (mag / maxMag > 0.3) barColour = "bg-cyan-400/80";
 
           return (
             <div
@@ -49,7 +52,7 @@ export default function SpectrumChart({
               style={{ width: `${barWidth}%`, padding: `0 ${barGap / 2}%` }}
             >
               <div
-                className={`w-full rounded-t transition-all duration-200 ${barColor}`}
+                className={`w-full rounded-t transition-all duration-200 ${barColour}`}
                 style={{
                   height: Math.max(barH, 2),
                   boxShadow: isHighlight

@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import NarrateButton from "./NarrateButton";
 
 interface SectionWrapperProps {
   id: string;
   number: string;
   title: string;
   subtitle?: string;
+  narration?: string;
   children: ReactNode;
 }
 
@@ -13,6 +15,7 @@ export default function SectionWrapper({
   number,
   title,
   subtitle,
+  narration,
   children,
 }: SectionWrapperProps) {
   return (
@@ -29,6 +32,11 @@ export default function SectionWrapper({
             <p className="text-slate-400 text-lg mt-3 max-w-2xl">
               {subtitle}
             </p>
+          )}
+          {narration && (
+            <div className="mt-4">
+              <NarrateButton text={narration} label="Listen to this section" />
+            </div>
           )}
         </div>
         {children}

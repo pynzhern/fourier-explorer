@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 
 interface WaveformCanvasProps {
-  signals: { data: number[]; color: string; lineWidth?: number; label?: string }[];
+  signals: { data: number[]; colour: string; lineWidth?: number; label?: string }[];
   height?: number;
   className?: string;
   yRange?: [number, number];
@@ -88,7 +88,7 @@ export default function WaveformCanvas({
       const N = sig.data.length;
       if (N === 0) continue;
 
-      ctx.strokeStyle = sig.color;
+      ctx.strokeStyle = sig.colour;
       ctx.lineWidth = sig.lineWidth ?? 2;
       ctx.lineJoin = "round";
       ctx.beginPath();
@@ -108,7 +108,7 @@ export default function WaveformCanvas({
       let labelX = 8;
       for (const sig of signals) {
         if (!sig.label) continue;
-        ctx.fillStyle = sig.color;
+        ctx.fillStyle = sig.colour;
         ctx.fillRect(labelX, 8, 12, 3);
         ctx.fillStyle = "rgba(255,255,255,0.7)";
         ctx.fillText(sig.label, labelX + 16, 14);

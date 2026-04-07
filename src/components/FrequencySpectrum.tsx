@@ -5,12 +5,12 @@ import MathBlock from "./Math";
 import {
   generateSignal,
   computeDFT,
-  normalizeMagnitude,
+  normaliseMagnitude,
 } from "../utils/dft";
 import type { SineComponent } from "../utils/dft";
 
 const N = 512;
-const MAX_DISPLAY = 16;
+const MAX_DISPLAY = 12;
 
 interface FrequencySpectrumProps {
   components: SineComponent[];
@@ -21,8 +21,8 @@ export default function FrequencySpectrum({
 }: FrequencySpectrumProps) {
   const signal = useMemo(() => generateSignal(components, N), [components]);
   const dft = useMemo(() => computeDFT(signal), [signal]);
-  const normalizedMags = useMemo(
-    () => normalizeMagnitude(dft.magnitude, N),
+  const normalisedMags = useMemo(
+    () => normaliseMagnitude(dft.magnitude, N),
     [dft],
   );
 
@@ -35,20 +35,22 @@ export default function FrequencySpectrum({
       id="spectrum"
       number="Part Three"
       title="The frequency spectrum"
-      subtitle="When you compute the dot product at every frequency, you get the full picture: a frequency spectrum. Each bar shows how much energy lives at that frequency. Try changing the signal in Part One and watch the spectrum update."
+      subtitle="Repeat that dot product at every integer frequency from 0 to N-1, and you get the full frequency spectrum. Each bar tells you how much energy lives at that frequency — tall bar means loud, short bar means quiet. Go back to Part One, change the signal, and watch the bars move in real time."
+      narration={`Part three: the frequency spectrum. Repeat that dot product at every integer frequency from zero to N minus one, and you get the full frequency spectrum. Each bar tells you how much energy lives at that frequency — a tall bar means that frequency is loud, a short bar means it's quiet. Try changing the signal in part one and watch the spectrum update in real time. Each bar's height is the magnitude of the complex D.F.T. coefficient at that frequency — computed as the square root of the cosine coefficient squared plus the sine coefficient squared. Changing the amplitude of a component in part one makes its bar taller or shorter, but doesn't move it. The frequencies stay the same. Each frequency also carries a phase angle — it tells you where the wave starts. Two signals can have identical magnitude spectra but sound completely different because their phases differ. The D.F.T. divides the frequency axis into N bins. More samples means finer resolution — you can distinguish closer frequencies. There's also a fundamental limit: to faithfully capture a frequency, you must sample at least twice as fast. This is the Nye-quist rate. Human hearing tops out at about twenty kilo-hertz, so CD audio samples at forty-four point one kilo-hertz. Sample slower and high frequencies fold back as artefacts — that's aliasing. The connection to P.C.A.: P.C.A. picks basis vectors that maximise variance. The D.F.T. uses fixed sighnewsoidal bases that reveal frequency content. Same linear algebra, different question being asked.`}
     >
       <div className="space-y-6">
         {/* Spectrum */}
         <div className="rounded-xl bg-navy-800/50 border border-slate-700/50 p-6">
           <SpectrumChart
-            magnitudes={normalizedMags}
+            magnitudes={normalisedMags}
             maxFreq={MAX_DISPLAY}
+            startBin={1}
             height={240}
             activeFrequencies={activeFreqs}
           />
           <div className="flex items-center justify-between mt-3 text-xs text-slate-500">
             <span>Frequency bin (k)</span>
-            <span>Magnitude (normalized)</span>
+            <span>Magnitude (normalised)</span>
           </div>
         </div>
 
@@ -79,7 +81,7 @@ export default function FrequencySpectrum({
               </div>
             </div>
             <p className="text-slate-500 text-xs">
-              Here <em>n</em> is the time index, <em>k</em> is the frequency index, <em>N</em> is the total number of samples, and <MathBlock tex="j = \sqrt{-1}" />. In practice, the Fast Fourier Transform (FFT) computes the same result in <MathBlock tex="\mathcal{O}(N \log N)" /> instead of <MathBlock tex="\mathcal{O}(N^2)" />, which is why real-world libraries use FFT. The math is identical.
+              <em>n</em> = time index, <em>k</em> = frequency index, <em>N</em> = total samples, <MathBlock tex="j = \sqrt{-1}" />. The naive DFT is <MathBlock tex="\mathcal{O}(N^2)" /> — for every frequency bin, you loop over every sample. The Fast Fourier Transform (FFT) exploits symmetry to get <MathBlock tex="\mathcal{O}(N \log N)" />. Same result, much faster. Every audio app, numpy, and scipy uses FFT under the hood.
             </p>
           </div>
         </div>
@@ -91,22 +93,23 @@ export default function FrequencySpectrum({
               Magnitude
             </h4>
             <p className="text-slate-400 text-sm leading-relaxed">
-              The height of each bar is{" "}
+              Each bar's height is{" "}
               <MathBlock tex="|X[k]| = \sqrt{a_k^2 + b_k^2}" />,
-              the magnitude of the complex coefficient. In audio, higher
-              magnitude means that pitch is louder. Notice that volume (amplitude)
-              does not affect which frequencies are present, only how tall the
-              bars are.
+              the magnitude of the complex coefficient. In audio terms: taller
+              bar = louder pitch. Changing amplitude in Part One makes bars
+              taller or shorter but doesn't move them — the frequencies stay the
+              same.
             </p>
           </div>
           <div className="rounded-xl bg-navy-800/30 border border-slate-700/40 p-4">
             <h4 className="text-amber-400 font-medium text-sm mb-2">Phase</h4>
             <p className="text-slate-400 text-sm leading-relaxed">
               Each frequency also carries a phase angle{" "}
-              <MathBlock tex="\phi_k = \angle X[k]" />, the angle of the
-              complex coefficient <MathBlock tex="X[k]" />. This tells you how
-              shifted that sine wave is. The spectrum plot above shows magnitude
-              only. Phase is needed for perfect reconstruction.
+              <MathBlock tex="\phi_k = \angle X[k]" /> — it tells you <em>where</em>{" "}
+              the wave starts. Two signals can have identical magnitude spectra
+              but sound completely different because their phases differ. The
+              spectrum above shows magnitude only; phase is needed for perfect
+              reconstruction.
             </p>
           </div>
           <div className="rounded-xl bg-navy-800/30 border border-slate-700/40 p-4">
@@ -116,11 +119,12 @@ export default function FrequencySpectrum({
               )
             </h4>
             <p className="text-slate-400 text-sm leading-relaxed">
-              The DFT divides the frequency axis into <em>N</em> bins spaced{" "}
-              <MathBlock tex="\Delta f = \frac{f_s}{N}" /> apart, where{" "}
-              <MathBlock tex="f_s" /> is the sampling rate and <MathBlock tex="N" /> is the number of
-              samples. More samples means finer resolution. Bin <MathBlock tex="k" /> corresponds to
-              frequency <MathBlock tex="k \cdot \Delta f" /> Hz.
+              The DFT chops the frequency axis into <em>N</em> bins spaced{" "}
+              <MathBlock tex="\Delta f = \frac{f_s}{N}" /> apart.{" "}
+              <MathBlock tex="f_s" /> is the sampling rate, <MathBlock tex="N" /> the number of
+              samples. More samples = finer resolution (you can distinguish
+              closer frequencies). Bin <MathBlock tex="k" /> corresponds to{" "}
+              <MathBlock tex="k \cdot \Delta f" /> Hz.
             </p>
           </div>
         </div>
@@ -131,14 +135,15 @@ export default function FrequencySpectrum({
             Nyquist Rate and Sampling
           </h4>
           <p className="text-slate-400 text-sm leading-relaxed">
-            The sampling theorem tells us that to capture a frequency <MathBlock tex="f" /> without
-            losing information, you must sample at least twice as fast:{" "}
-            <MathBlock tex="f_s > 2 f_{\max}" />. This minimum rate is called
-            the <span className="text-white">Nyquist rate</span>. Humans can
-            hear 20 Hz to 20 kHz, so the industry standard for CD audio is
-            44.1 kHz (just above <MathBlock tex="2 \times 20\,\text{kHz}" />). Only the bottom half of the DFT
-            output (bins 0 to <MathBlock tex="N/2" />) represents unique positive frequencies; the
-            upper half mirrors them.
+            Here's a fundamental limit: to faithfully capture a frequency{" "}
+            <MathBlock tex="f" />, you must sample at least twice as fast —{" "}
+            <MathBlock tex="f_s > 2 f_{\max}" />. This is the{" "}
+            <span className="text-white">Nyquist rate</span>. Human hearing
+            tops out at ~20 kHz, so CD audio samples at 44.1 kHz (just above{" "}
+            <MathBlock tex="2 \times 20\,\text{kHz}" />). Sample slower and
+            high frequencies "fold back" as artefacts — that's aliasing. Only
+            bins 0 to <MathBlock tex="N/2" /> are unique; the upper half mirrors
+            them due to the symmetry of real-valued signals.
           </p>
         </div>
 
@@ -146,19 +151,18 @@ export default function FrequencySpectrum({
         <div className="rounded-xl bg-navy-800/30 border border-cyan-400/10 p-5">
           <p className="text-slate-300 text-sm leading-relaxed">
             <span className="text-cyan-400 font-medium">
-              Connection to PCA:
+              PCA vs DFT — same recipe, different ingredients:
             </span>{" "}
-            In PCA, you project data onto eigenvectors (the principal components)
-            to get projection coefficients{" "}
-            <MathBlock tex="\alpha_{ij} = \text{dot}(x_i, e_j)" />, and you can
-            reconstruct{" "}
-            <MathBlock tex="x_i = \sum \alpha_{ij} e_j" />. The DFT is exactly
-            the same operation: project the signal onto sine and cosine basis
-            vectors to get coefficients <MathBlock tex="a_k" /> and{" "}
-            <MathBlock tex="b_k" />, and reconstruct as{" "}
-            <MathBlock tex="x[n] = \sum (a_k \cdot \sin + b_k \cdot \cos)" />.
-            Same math, different basis vectors chosen to reveal frequency content
-            instead of variance.
+            PCA projects data onto eigenvectors:{" "}
+            <MathBlock tex="\alpha_{ij} = \text{dot}(x_i, e_j)" />, then
+            reconstructs via{" "}
+            <MathBlock tex="x_i = \sum \alpha_{ij} e_j" />. The DFT does the
+            same — project onto sine/cosine bases to get{" "}
+            <MathBlock tex="a_k" /> and <MathBlock tex="b_k" />, reconstruct as{" "}
+            <MathBlock tex="x[n] = \sum \bigl(a_k \sin(2\pi k \tfrac{n}{N}) + b_k \cos(2\pi k \tfrac{n}{N})\bigr)" />.
+            PCA picks basis vectors that maximise variance; the DFT uses fixed
+            sinusoidal bases that reveal frequency content. Same linear algebra,
+            different question being asked.
           </p>
         </div>
       </div>

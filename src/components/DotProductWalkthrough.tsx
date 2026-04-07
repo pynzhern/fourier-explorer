@@ -7,12 +7,12 @@ import {
   generateSignal,
   dotProductWithCos,
   dotProductWithSin,
-  normalizeMagnitude,
+  normaliseMagnitude,
 } from "../utils/dft";
 import type { SineComponent } from "../utils/dft";
 
 const N = 256;
-const MAX_K = 14;
+const MAX_K = 12;
 
 interface DotProductWalkthroughProps {
   components: SineComponent[];
@@ -48,7 +48,7 @@ export default function DotProductWalkthrough({
         cosR.dotProduct * cosR.dotProduct + sinR.dotProduct * sinR.dotProduct,
       );
     }
-    return normalizeMagnitude(mags, N);
+    return normaliseMagnitude(mags, N);
   }, [signal]);
 
   const magnitude = Math.sqrt(
@@ -70,7 +70,8 @@ export default function DotProductWalkthrough({
       id="dot-product"
       number="Part Two"
       title="The DFT is just dot products"
-      subtitle={`Here's the key insight: to find out how much of a particular frequency is "hiding" in a signal, you multiply the signal by a sine or cosine wave at that frequency and add up the results. That's a dot product. It's the same operation as projecting a vector onto a basis vector in PCA.`}
+      subtitle={`How do you ask a signal "do you contain frequency k?" You multiply it by a sine or cosine at that frequency, then sum the products. If the frequency is present, the values reinforce and the sum is large. If not, positives and negatives cancel to zero. That's a dot product — identical to projecting onto a basis vector in PCA.`}
+      narration={`Part two: the D.F.T. is just dot products. How do you ask a signal whether it contains a particular frequency? You multiply the signal, sample by sample, by a sine or cosine wave at that frequency, then add up all the results. If the frequency is present, the products line up and the sum is large. If it's not present, the products oscillate above and below zero and cancel out to roughly zero. This works because of orthogonality — the same property that makes P.C.A. work. Sine and cosine waves at different frequencies are orthogonal to each other, meaning their dot product is zero. So when you test a frequency that isn't in the signal, orthogonality guarantees cancellation. You need to test with both cosine and sine because a real signal at any frequency can be phase-shifted. One dot product alone can't recover both the amplitude and the phase. The two dot products together give you a complex number: the cosine part is the real component, and the sine part is the imaginary component. The magnitude of that complex number tells you the amplitude, and the angle tells you the phase.`}
     >
       <div className="space-y-4">
 
@@ -86,8 +87,9 @@ export default function DotProductWalkthrough({
           <div className="px-5 pb-5 space-y-3">
             <p className="text-slate-300 text-sm leading-relaxed">
               <span className="text-white font-medium">Orthogonality</span> is
-              the same property that makes PCA work with eigenvectors. Sine and
-              cosine waves at different frequencies are mutually orthogonal:
+              the reason this trick works — and it's the same property that makes
+              PCA work. Sine and cosine waves at different integer frequencies are
+              mutually orthogonal over one period:
             </p>
             <ul className="text-slate-400 text-sm space-y-1.5 pl-4">
               <li>
@@ -101,13 +103,15 @@ export default function DotProductWalkthrough({
               </li>
             </ul>
             <p className="text-slate-300 text-sm leading-relaxed">
-              When the test frequency{" "}
+              When your test frequency{" "}
               <span className="text-cyan-400 font-medium">matches</span> a
-              component in the signal, the waves line up and their product stays
-              mostly positive, giving a large sum. When they{" "}
+              component, the waves line up — their product stays mostly positive
+              and the sum is large. When they{" "}
               <span className="text-amber-400 font-medium">don't match</span>,
-              orthogonality guarantees the product oscillates symmetrically and
-              cancels to roughly zero.
+              the product oscillates symmetrically above and below zero, cancelling
+              out. Orthogonality guarantees this. Try it: step through k values
+              and watch the element-wise product flip between reinforcing and
+              cancelling.
             </p>
           </div>
         </details>
@@ -123,19 +127,25 @@ export default function DotProductWalkthrough({
           </summary>
           <div className="px-5 pb-5 space-y-3">
             <p className="text-slate-300 text-sm leading-relaxed">
-              A shifted sinusoid can be decomposed using the angle-addition identity:
+              Real-world signals rarely start at phase zero. A shifted sinusoid
+              decomposes via the angle-addition identity:
             </p>
-            <div className="py-2 text-center">
+            <div className="py-2 text-center space-y-2">
               <MathRenderer
                 tex="\sin(2\pi ft + \phi) = \sin(2\pi ft)\cos(\phi) + \cos(2\pi ft)\sin(\phi)"
                 display
               />
+              <MathRenderer
+                tex="\cos(2\pi ft + \phi) = \cos(2\pi ft)\cos(\phi) - \sin(2\pi ft)\sin(\phi)"
+                display
+              />
             </div>
             <p className="text-slate-300 text-sm leading-relaxed">
-              So any real signal at a given frequency is a weighted mix of both
-              sine and cosine. You need dot products with both bases to recover
-              the full amplitude and phase shift. Toggle between the cos and sin
-              basis below to see how the two dot products differ.
+              Any phase-shifted wave is a weighted mix of pure sine and pure
+              cosine at the same frequency. One dot product alone can't tell you
+              both the amplitude and the phase — you need two. Toggle between the
+              cos and sin basis below to see how their dot products differ for the
+              same signal.
             </p>
           </div>
         </details>
@@ -145,8 +155,8 @@ export default function DotProductWalkthrough({
           <span className="text-sm text-slate-400">Test frequency:</span>
           <div className="flex items-center gap-1">
             <button
-              onClick={() => setK(Math.max(0, k - 1))}
-              disabled={k === 0}
+              onClick={() => setK(Math.max(1, k - 1))}
+              disabled={k === 1}
               aria-label="Decrease frequency"
               className="w-8 h-8 rounded-lg bg-navy-700 border border-slate-600/50 text-white disabled:opacity-30 hover:border-cyan-400/50 transition-colors flex items-center justify-center"
             >
@@ -190,11 +200,13 @@ export default function DotProductWalkthrough({
             </button>
           </div>
 
-          {matchesComponent && (
-            <div className="px-3 py-1 rounded-full bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 text-xs font-medium animate-pulse">
-              Match found!
-            </div>
-          )}
+          <div className={`px-3 py-1 rounded-full text-xs font-medium transition-opacity ${
+            matchesComponent
+              ? "bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 animate-pulse opacity-100"
+              : "border border-transparent text-transparent opacity-0"
+          }`}>
+            Match found!
+          </div>
         </div>
 
         {/* Steps 1 & 2 side by side */}
@@ -211,10 +223,10 @@ export default function DotProductWalkthrough({
             </div>
             <WaveformCanvas
               signals={[
-                { data: signal, color: "#ffffff", lineWidth: 1.5, label: "Signal" },
+                { data: signal, colour: "#ffffff", lineWidth: 1.5, label: "Signal" },
                 {
                   data: activeResult.basis,
-                  color: showSin ? "#fbbf24" : "#22d3ee",
+                  colour: showSin ? "#fbbf24" : "#22d3ee",
                   lineWidth: 1.5,
                   label: `${showSin ? "sin" : "cos"}(2π·${k}·n/N)`,
                 },
@@ -237,7 +249,7 @@ export default function DotProductWalkthrough({
               signals={[
                 {
                   data: activeResult.products,
-                  color: matchesComponent ? "#34d399" : "#f472b6",
+                  colour: matchesComponent ? "#34d399" : "#f472b6",
                   lineWidth: 1.5,
                   label: "signal \u00d7 basis",
                 },
@@ -247,8 +259,8 @@ export default function DotProductWalkthrough({
             />
             <p className="text-xs text-slate-500 mt-2">
               {matchesComponent
-                ? "The product stays mostly on one side of zero — the waves are in sync."
-                : "The product oscillates above and below zero, meaning these frequencies don't match."}
+                ? "The products stay mostly positive — this frequency is in the signal. The sin and cos dot products together give a large magnitude."
+                : "See how the products oscillate above and below zero? They cancel out. This frequency isn't present."}
             </p>
           </div>
         </div>
@@ -324,7 +336,7 @@ export default function DotProductWalkthrough({
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              The complex number packs both the cosine and sine coefficients into a single value, encoding amplitude and phase together.
+              Why complex numbers? They pack both coefficients into one value — the magnitude gives amplitude, the angle gives phase. Two numbers for the price of one.
             </p>
           </div>
         </div>
@@ -342,6 +354,7 @@ export default function DotProductWalkthrough({
           <SpectrumChart
             magnitudes={magnitudes}
             maxFreq={MAX_K}
+            startBin={1}
             height={180}
             highlightBin={k}
             activeFrequencies={activeComponentFreqs}

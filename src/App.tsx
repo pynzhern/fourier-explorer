@@ -3,6 +3,7 @@ import SignalBuilder from "./components/SignalBuilder";
 import DotProductWalkthrough from "./components/DotProductWalkthrough";
 import FrequencySpectrum from "./components/FrequencySpectrum";
 import Reconstruction from "./components/Reconstruction";
+import NarrateButton from "./components/NarrateButton";
 import type { SineComponent } from "./utils/dft";
 
 const DEFAULT_COMPONENTS: SineComponent[] = [
@@ -39,20 +40,26 @@ function App() {
           </h1>
 
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl leading-relaxed mb-8">
-            The Discrete Fourier Transform sounds intimidating, but at its core it is
-            something you already know: a dot product. In PCA, you project data
-            onto eigenvectors to find principal components. The DFT does the same
-            thing, projecting a signal onto sine and cosine basis vectors to find
-            its frequency components.
+            The Discrete Fourier Transform is <em>not</em> new to you. The core
+            operation is a dot product — the same one you used in PCA to project
+            data onto eigenvectors. The DFT just swaps eigenvectors for sine and
+            cosine waves, and now you're reading <em>frequency content</em>{" "}
+            instead of finding directions of maximum variance.
           </p>
 
           <p className="text-slate-500 text-base max-w-2xl leading-relaxed">
-            In BT3017, we learned that any set of orthogonal basis vectors can be
-            used for projection and reconstruction. For audio signals, the natural
-            choice is sine and cosine waves, because they reveal the frequency
-            content of the signal. This guide walks you through that intuition
-            step by step.
+            Recall from BT3017: any set of orthogonal basis vectors lets you
+            decompose and reconstruct data. For audio signals, the natural basis
+            is sinusoids — they tell you which frequencies are present and how
+            strong each one is. This guide builds that intuition step by step.
           </p>
+
+          <div className="mt-6">
+            <NarrateButton
+              text="Fourier Transform, Demystified. The Discrete Fourier Transform is not new to you. The core operation is a dot product — the same one you used in P.C.A. to project data onto eigen-vectors. The D.F.T. just swaps eigen-vectors for sine and cosine waves, and now you're reading frequency content instead of finding directions of maximum variance. Recall from B.T. three oh one seven: any set of orthogonal basis vectors lets you decompose and reconstruct data. For audio signals, the natural basis is sighnewsoids — they tell you which frequencies are present and how strong each one is. This guide builds that intuition step by step."
+              label="Listen to introduction"
+            />
+          </div>
 
           {/* Nav hints */}
           <nav className="flex flex-wrap gap-3 mt-12">
