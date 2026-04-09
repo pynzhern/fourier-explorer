@@ -81,7 +81,7 @@ export default function FrequencySpectrum({
               </div>
             </div>
             <p className="text-slate-500 text-xs">
-              <em>n</em> = time index, <em>k</em> = frequency index, <em>N</em> = total samples, <MathBlock tex="j = \sqrt{-1}" />. The naive DFT is <MathBlock tex="\mathcal{O}(N^2)" /> — for every frequency bin, you loop over every sample. The Fast Fourier Transform (FFT) exploits symmetry to get <MathBlock tex="\mathcal{O}(N \log N)" />. Same result, much faster. Every audio app, numpy, and scipy uses FFT under the hood.
+              <em>n</em> = time index, <em>k</em> = frequency index, <em>N</em> = total samples, <MathBlock tex="j = \sqrt{-1}" />. The naive DFT is <MathBlock tex="\mathcal{O}(N^2)" />: for every frequency bin, you loop over every sample. The Fast Fourier Transform (FFT) exploits symmetry to get <MathBlock tex="\mathcal{O}(N \log N)" />. Same result, much faster. Every audio app, numpy, and scipy uses FFT under the hood.
             </p>
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function FrequencySpectrum({
               <MathBlock tex="|X[k]| = \sqrt{a_k^2 + b_k^2}" />,
               the magnitude of the complex coefficient. In audio terms: taller
               bar = louder pitch. Changing amplitude in Part One makes bars
-              taller or shorter but doesn't move them — the frequencies stay the
+              taller or shorter but doesn't move them. The frequencies stay the
               same.
             </p>
           </div>
@@ -105,7 +105,7 @@ export default function FrequencySpectrum({
             <h4 className="text-amber-400 font-medium text-sm mb-2">Phase</h4>
             <p className="text-slate-400 text-sm leading-relaxed">
               Each frequency also carries a phase angle{" "}
-              <MathBlock tex="\phi_k = \angle X[k]" /> — it tells you <em>where</em>{" "}
+              <MathBlock tex="\phi_k = \angle X[k]" />, which tells you <em>where</em>{" "}
               the wave starts. Two signals can have identical magnitude spectra
               but sound completely different because their phases differ. The
               spectrum above shows magnitude only; phase is needed for perfect
@@ -141,7 +141,7 @@ export default function FrequencySpectrum({
             <span className="text-white">Nyquist rate</span>. Human hearing
             tops out at ~20 kHz, so CD audio samples at 44.1 kHz (just above{" "}
             <MathBlock tex="2 \times 20\,\text{kHz}" />). Sample slower and
-            high frequencies "fold back" as artefacts — that's aliasing. Only
+            high frequencies "fold back" as artefacts (aliasing). Only
             bins 0 to <MathBlock tex="N/2" /> are unique; the upper half mirrors
             them due to the symmetry of real-valued signals.
           </p>
@@ -151,18 +151,18 @@ export default function FrequencySpectrum({
         <div className="rounded-xl bg-navy-800/30 border border-cyan-400/10 p-5">
           <p className="text-slate-300 text-sm leading-relaxed">
             <span className="text-cyan-400 font-medium">
-              PCA vs DFT — same recipe, different ingredients:
+              Connection to PCA:
             </span>{" "}
-            PCA projects data onto eigenvectors:{" "}
-            <MathBlock tex="\alpha_{ij} = \text{dot}(x_i, e_j)" />, then
-            reconstructs via{" "}
-            <MathBlock tex="x_i = \sum \alpha_{ij} e_j" />. The DFT does the
-            same — project onto sine/cosine bases to get{" "}
+            Both PCA and the DFT project data onto a set of basis vectors and
+            reconstruct from the coefficients. In PCA:{" "}
+            <MathBlock tex="\alpha_{ij} = \text{dot}(x_i, e_j)" />, then{" "}
+            <MathBlock tex="x_i = \sum \alpha_{ij} e_j" />. In the DFT:
+            project onto sine/cosine bases to get{" "}
             <MathBlock tex="a_k" /> and <MathBlock tex="b_k" />, reconstruct as{" "}
             <MathBlock tex="x[n] = \sum \bigl(a_k \sin(2\pi k \tfrac{n}{N}) + b_k \cos(2\pi k \tfrac{n}{N})\bigr)" />.
-            PCA picks basis vectors that maximise variance; the DFT uses fixed
-            sinusoidal bases that reveal frequency content. Same linear algebra,
-            different question being asked.
+            The only difference is the choice of basis. PCA finds the best basis
+            for a given dataset (eigenvectors of the covariance matrix). The DFT
+            uses a fixed basis of sinusoids, chosen to reveal frequency content.
           </p>
         </div>
       </div>

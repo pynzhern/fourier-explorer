@@ -24,13 +24,6 @@ function App() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-cyan-400/3 rounded-full blur-3xl" />
 
         <div className="relative max-w-5xl mx-auto px-6 md:px-12 lg:px-20 pt-16 pb-20">
-          <div className="flex items-center gap-2 mb-6">
-            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-            <span className="text-xs tracking-widest uppercase text-cyan-400/70 font-medium">
-              BT3017 Interactive Explainer
-            </span>
-          </div>
-
           <h1 className="font-display text-5xl md:text-7xl text-white leading-[1.1] mb-6">
             Fourier Transform,
             <br />
@@ -41,7 +34,7 @@ function App() {
 
           <p className="text-slate-400 text-lg md:text-xl max-w-2xl leading-relaxed mb-8">
             The Discrete Fourier Transform is <em>not</em> new to you. The core
-            operation is a dot product — the same one you used in PCA to project
+            operation is a dot product, the same one you used in PCA to project
             data onto eigenvectors. The DFT just swaps eigenvectors for sine and
             cosine waves, and now you're reading <em>frequency content</em>{" "}
             instead of finding directions of maximum variance.
@@ -50,7 +43,7 @@ function App() {
           <p className="text-slate-500 text-base max-w-2xl leading-relaxed">
             Recall from BT3017: any set of orthogonal basis vectors lets you
             decompose and reconstruct data. For audio signals, the natural basis
-            is sinusoids — they tell you which frequencies are present and how
+            is sinusoids. They tell you which frequencies are present and how
             strong each one is. This guide builds that intuition step by step.
           </p>
 

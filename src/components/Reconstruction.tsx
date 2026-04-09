@@ -58,7 +58,7 @@ export default function Reconstruction({ components }: ReconstructionProps) {
       id="reconstruction"
       number="Part Four"
       title="Reconstruction: no information lost"
-      subtitle="The DFT doesn't destroy anything. Given the spectrum, you can perfectly rebuild the original signal by adding back one frequency component at a time. Slide K up and watch the cyan curve converge onto the original — that's the inverse DFT in action."
+      subtitle="The DFT doesn't destroy anything. Given the spectrum, you can perfectly rebuild the original signal by adding back one frequency component at a time. Slide K up and watch the cyan curve converge onto the original. That's the inverse DFT."
       narration={`Part four: reconstruction — no information lost. The D.F.T. doesn't destroy anything. Given the frequency spectrum, you can perfectly rebuild the original signal by adding back one frequency component at a time. Each frequency bin holds a coefficient — a weight that says how much cosine and how much sine at that frequency. Turn each coefficient back into a weighted wave, sum them all, and you get the original signal back. The more frequency bins you include, the better the approximation. With all bins included, you get perfect reconstruction — zero error. The D.F.T. and its inverse are exact inverses of each other. This is the principle behind compression. em pee three and jay peg work on this exact idea: transform to the frequency domain, keep only the bins with significant energy, and throw away the rest. The smallest number of bins that gives near-zero error is the compression sweet spot.`}
     >
       <div className="space-y-5">
@@ -70,7 +70,7 @@ export default function Reconstruction({ components }: ReconstructionProps) {
           </summary>
           <div className="px-4 pb-4 text-slate-300 text-sm leading-relaxed space-y-2">
             <p>
-              Each frequency bin holds a coefficient — a weight that says "this
+              Each frequency bin holds a coefficient: a weight that says "this
               much cosine, this much sine at frequency k." Turn each coefficient
               back into a weighted wave and sum them all:
             </p>
@@ -82,7 +82,7 @@ export default function Reconstruction({ components }: ReconstructionProps) {
             </div>
             <p>
               More bins = better approximation. With all bins included, you get
-              perfect reconstruction — zero error. This is lossless: the DFT and
+              perfect reconstruction with zero error. This is lossless: the DFT and
               its inverse are exact inverses of each other.
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function Reconstruction({ components }: ReconstructionProps) {
           />
           <p className="text-xs text-slate-500 text-center">
             {error < 0.001
-              ? "Perfect reconstruction — every sample matches the original exactly."
+              ? "Perfect reconstruction. Every sample matches the original exactly."
               : `${K} of ${maxK} bins included. The gap between cyan and grey is what you're throwing away.`}
           </p>
         </div>
@@ -193,7 +193,7 @@ export default function Reconstruction({ components }: ReconstructionProps) {
         <div className="rounded-xl bg-navy-800/30 border border-cyan-400/10 p-4">
           <p className="text-slate-300 text-sm leading-relaxed">
             <span className="text-cyan-400 font-medium">
-              Why this matters — compression:
+              Why this matters: compression.
             </span>{" "}
             MP3 and JPEG work on this exact principle. Transform to the frequency
             domain, keep only the bins with significant energy, throw away the rest.
@@ -201,7 +201,7 @@ export default function Reconstruction({ components }: ReconstructionProps) {
             <span className="text-white">{K}/{maxK}</span> bins
             ({((K / maxK) * 100).toFixed(0)}% of the spectrum).{" "}
             {error < 0.001
-              ? "Already perfect — the signal only contains a few frequencies, so most bins were empty anyway."
+              ? "Already perfect. The signal only contains a few frequencies, so most bins were empty anyway."
               : "Try finding the smallest K that gives near-zero error. That's the compression sweet spot."}
           </p>
         </div>

@@ -70,7 +70,7 @@ export default function DotProductWalkthrough({
       id="dot-product"
       number="Part Two"
       title="The DFT is just dot products"
-      subtitle={`How do you ask a signal "do you contain frequency k?" You multiply it by a sine or cosine at that frequency, then sum the products. If the frequency is present, the values reinforce and the sum is large. If not, positives and negatives cancel to zero. That's a dot product — identical to projecting onto a basis vector in PCA.`}
+      subtitle={`How do you ask a signal "do you contain frequency k?" You multiply it by a sine or cosine at that frequency, then sum the products. If the frequency is present, the values reinforce and the sum is large. If not, positives and negatives cancel to zero. That's a dot product, identical to projecting onto a basis vector in PCA.`}
       narration={`Part two: the D.F.T. is just dot products. How do you ask a signal whether it contains a particular frequency? You multiply the signal, sample by sample, by a sine or cosine wave at that frequency, then add up all the results. If the frequency is present, the products line up and the sum is large. If it's not present, the products oscillate above and below zero and cancel out to roughly zero. This works because of orthogonality — the same property that makes P.C.A. work. Sine and cosine waves at different frequencies are orthogonal to each other, meaning their dot product is zero. So when you test a frequency that isn't in the signal, orthogonality guarantees cancellation. You need to test with both cosine and sine because a real signal at any frequency can be phase-shifted. One dot product alone can't recover both the amplitude and the phase. The two dot products together give you a complex number: the cosine part is the real component, and the sine part is the imaginary component. The magnitude of that complex number tells you the amplitude, and the angle tells you the phase.`}
     >
       <div className="space-y-4">
@@ -87,7 +87,7 @@ export default function DotProductWalkthrough({
           <div className="px-5 pb-5 space-y-3">
             <p className="text-slate-300 text-sm leading-relaxed">
               <span className="text-white font-medium">Orthogonality</span> is
-              the reason this trick works — and it's the same property that makes
+              the reason this trick works, and it's the same property that makes
               PCA work. Sine and cosine waves at different integer frequencies are
               mutually orthogonal over one period:
             </p>
@@ -105,7 +105,7 @@ export default function DotProductWalkthrough({
             <p className="text-slate-300 text-sm leading-relaxed">
               When your test frequency{" "}
               <span className="text-cyan-400 font-medium">matches</span> a
-              component, the waves line up — their product stays mostly positive
+              component, the waves line up. Their product stays mostly positive
               and the sum is large. When they{" "}
               <span className="text-amber-400 font-medium">don't match</span>,
               the product oscillates symmetrically above and below zero, cancelling
@@ -143,7 +143,7 @@ export default function DotProductWalkthrough({
             <p className="text-slate-300 text-sm leading-relaxed">
               Any phase-shifted wave is a weighted mix of pure sine and pure
               cosine at the same frequency. One dot product alone can't tell you
-              both the amplitude and the phase — you need two. Toggle between the
+              both the amplitude and the phase. You need two. Toggle between the
               cos and sin basis below to see how their dot products differ for the
               same signal.
             </p>
@@ -259,7 +259,7 @@ export default function DotProductWalkthrough({
             />
             <p className="text-xs text-slate-500 mt-2">
               {matchesComponent
-                ? "The products stay mostly positive — this frequency is in the signal. The sin and cos dot products together give a large magnitude."
+                ? "The products stay mostly positive: this frequency is in the signal. The sin and cos dot products together give a large magnitude."
                 : "See how the products oscillate above and below zero? They cancel out. This frequency isn't present."}
             </p>
           </div>
@@ -336,7 +336,7 @@ export default function DotProductWalkthrough({
               </span>
             </div>
             <p className="text-xs text-slate-500">
-              Why complex numbers? They pack both coefficients into one value — the magnitude gives amplitude, the angle gives phase. Two numbers for the price of one.
+              Why complex numbers? They pack both coefficients into one value. The magnitude gives amplitude, the angle gives phase. Two for the price of one.
             </p>
           </div>
         </div>
