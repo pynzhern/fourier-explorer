@@ -39,18 +39,21 @@ export default function WaveformCanvas({
     ctx.clearRect(0, 0, w, h);
 
     // Compute y range
-    let yMin = -2;
-    let yMax = 2;
+    let yMin: number;
+    let yMax: number;
     if (yRange) {
       [yMin, yMax] = yRange;
     } else {
+      yMin = Infinity;
+      yMax = -Infinity;
       for (const sig of signals) {
         for (const v of sig.data) {
           if (v < yMin) yMin = v;
           if (v > yMax) yMax = v;
         }
       }
-      const pad = (yMax - yMin) * 0.15 || 1;
+      if (!isFinite(yMin)) { yMin = -1; yMax = 1; }
+      const pad = (yMax - yMin) * 0.15 || 0.5;
       yMin -= pad;
       yMax += pad;
     }

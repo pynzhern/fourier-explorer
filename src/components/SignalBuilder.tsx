@@ -176,8 +176,8 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
                         lineWidth: 1.5,
                       },
                     ]}
-                    height={50}
-                    yRange={[-2.2, 2.2]}
+                    height={60}
+                    yRange={[-1.2, 1.2]}
                   />
                 </div>
               </div>
@@ -214,7 +214,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
                   lineWidth: 2,
                 },
               ]}
-              height={100}
+              height={120}
               showGrid
             />
           </div>

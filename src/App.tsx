@@ -104,7 +104,7 @@ function App() {
       <footer className="py-12 px-6 text-center">
         <div className="h-px bg-gradient-to-r from-transparent via-slate-700/50 to-transparent max-w-5xl mx-auto mb-8" />
         <p className="text-slate-600 text-sm">
-          Built for BT3017 Feature Engineering for Machine Learning, NUS
+          &copy; 2026 Khoo Pyn Zhern
         </p>
       </footer>
     </div>
