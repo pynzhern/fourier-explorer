@@ -177,7 +177,7 @@ export default function SignalBuilder({ components, onChange }: SignalBuilderPro
                       },
                     ]}
                     height={60}
-                    yRange={[-1.2, 1.2]}
+                    yRange={[-2.2, 2.2]}
                   />
                 </div>
               </div>
